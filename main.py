@@ -1,5 +1,17 @@
 import tkinter
 
+
+class MyButton(tkinter.Button):
+    def __init__(self, master, x, y, *args, **kwargs):
+        super(MyButton, self).__init__(master, font='Calibri 15 bold', *args, **kwargs)
+        self.x = x
+        self.y = y
+        self.is_mine = False
+
+    def __repr__(self):
+        return 'MyButton'
+
+
 class Minesweeper:
     window = tkinter.Tk()
     row = 5
@@ -10,7 +22,7 @@ class Minesweeper:
         for i in range(Minesweeper.row):
             temp = []
             for j in range(Minesweeper.column):
-                btn = tkinter.Button(Minesweeper.window, width=3, font='Calibri 15 bold')
+                btn = MyButton(Minesweeper.window, x=i, y=j, width=3)
                 temp.append(btn)
             self.buttons.append(temp)
 
@@ -21,8 +33,9 @@ class Minesweeper:
                 btn.grid(row=i, column=j)
 
     def start(self):
+        self.create_widgets()
         Minesweeper.window.mainloop()
 
-game=Minesweeper()
-game.create_widgets()
+
+game = Minesweeper()
 game.start()
