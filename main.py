@@ -1,5 +1,15 @@
 import tkinter
 from random import shuffle
+colors = {
+    1:'#0000ff',
+    2:'#018723',
+    3:'#e2e602',
+    4:'#e6020a',
+    5:'#ad45a0',
+    6:'#c45104',
+    7:'#04c4ae',
+    8:'#5a0c8a',
+}
 
 
 class MyButton(tkinter.Button):
@@ -19,7 +29,7 @@ class Minesweeper:
     window = tkinter.Tk()
     row = 7
     column = 10
-    mines = 20
+    mines = 10
 
     def __init__(self):
         self.buttons = []
@@ -35,15 +45,20 @@ class Minesweeper:
         if clicked_button.is_mine:
             clicked_button.config(text='*', background='red', disabledforeground='black')
         else:
-            clicked_button.config(text=clicked_button.number)
+            color = colors.get(clicked_button.count_bomb, 'black')
+            if clicked_button.count_bomb:
+                clicked_button.config(text=clicked_button.count_bomb, disabledforeground=color)
+            else:
+                clicked_button.config(text='', disabledforeground=color)
         clicked_button.config(state='disabled')
+        clicked_button.config(relief=tkinter.SUNKEN)
 
     def start(self):
         self.create_widgets()
         self.insert_mines()
         self.count_mines_in_buttons()
         self.print_button()
-        self.open_all_buttons()
+        # self.open_all_buttons()
         Minesweeper.window.mainloop()
 
     def create_widgets(self):
@@ -58,12 +73,19 @@ class Minesweeper:
                 btn = self.buttons[i][j]
                 if btn.is_mine:
                     btn.config(text='*', background='red', disabledforeground='black')
-                else:
-                    btn.config(text=btn.count_bomb, disabledforeground='black')
+                elif btn.count_bomb in colors:
+                    color=colors.get(btn.count_bomb, 'black')
+                    btn.config(text=btn.count_bomb, fg=color)
 
     def print_button(self):
-        for row_btn in self.buttons:
-            print(row_btn)
+        for i in range(1, Minesweeper.row + 1):
+            for j in range(1, Minesweeper.column + 1):
+                btn = self.buttons[i][j]
+                if btn.is_mine:
+                    print('B', end='')
+                else:
+                    print(btn.count_bomb, end='')
+            print()
 
     def insert_mines(self):
         index_mines = self.get_mines_places(self)
