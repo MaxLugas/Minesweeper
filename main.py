@@ -6,13 +6,14 @@ from tkinter import *
 colors = {
     1: '#0000ff',
     2: '#018723',
-    3: '#e2e602',
+    3: '#857701',
     4: '#e6020a',
     5: '#ad45a0',
     6: '#c45104',
     7: '#04c4ae',
     8: '#5a0c8a',
 }
+
 
 class MyButton(tkinter.Button):
     def __init__(self, master, x, y, number=0, *args, **kwargs):
@@ -45,7 +46,21 @@ class Minesweeper:
                 btn = MyButton(Minesweeper.window, x=i, y=j, width=3)
                 btn.config(command=lambda button=btn: self.click(button))
                 temp.append(btn)
+                btn.bind('<Button-3>', self.right_click)
             self.buttons.append(temp)
+
+    def right_click(self, event):
+        if Minesweeper.is_game_over:
+            return
+        cur_btn = event.widget
+        if cur_btn['state'] == 'normal':
+            cur_btn['state'] = 'disabled'
+            cur_btn['text'] = '🚩'
+            cur_btn['disabledforeground'] = 'red'
+        elif cur_btn['text'] == '🚩':
+            cur_btn['text'] = ''
+            cur_btn['state'] = 'normal'
+
 
     def click(self, clicked_button: MyButton):
         if Minesweeper.is_game_over:
@@ -135,8 +150,8 @@ class Minesweeper:
         mines_entry.insert(0, Minesweeper.mines)
         mines_entry.grid(row=2, column=1, padx=20, pady=20)
 
-        save_btn=tkinter.Button(window_settings, text='Submit',
-                       command=lambda: self.change_settings(row_entry, column_entry, mines_entry))
+        save_btn = tkinter.Button(window_settings, text='Submit',
+                                  command=lambda: self.change_settings(row_entry, column_entry, mines_entry))
         save_btn.grid(row=3, column=0, columnspan=2, padx=20, pady=20)
 
     def change_settings(self, row: tkinter.Entry, column: tkinter.Entry, mines: tkinter.Entry):
@@ -145,7 +160,7 @@ class Minesweeper:
         except ValueError:
             showerror('Error', 'Enter the number')
             return
-        Minesweeper.row= int(row.get())
+        Minesweeper.row = int(row.get())
         Minesweeper.column = int(column.get())
         Minesweeper.mines = int(mines.get())
         self.reload()
