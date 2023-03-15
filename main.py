@@ -1,7 +1,6 @@
 import tkinter
 from random import shuffle
 from tkinter.messagebox import showinfo, showerror
-from tkinter import *
 
 colors = {
     1: '#0000ff',
@@ -61,6 +60,15 @@ class Minesweeper:
             cur_btn['text'] = ''
             cur_btn['state'] = 'normal'
 
+    def check_win(self):
+        open_buttons = 0
+        for i in range(1, Minesweeper.row + 1):
+            for j in range(1, Minesweeper.column + 1):
+                if self.buttons[i][j].is_open:
+                    open_buttons += 1
+        if open_buttons == Minesweeper.row * Minesweeper.column - Minesweeper.mines:
+            Minesweeper.is_game_over = True
+            showinfo('Game Over', 'You Win!')
 
     def click(self, clicked_button: MyButton):
         if Minesweeper.is_game_over:
@@ -93,6 +101,8 @@ class Minesweeper:
                     if not btn.is_open and btn.number != 0:
                         self.click(btn)
         clicked_button.config(state='disabled')
+
+        self.check_win()
 
     def breadth_first_search(self, btn: MyButton):
         queue = [btn]
@@ -165,6 +175,12 @@ class Minesweeper:
         Minesweeper.mines = int(mines.get())
         self.reload()
 
+    def about(self):
+        showinfo('Version', 'Game version 1.1')
+
+    def author(self):
+        showinfo('Author', 'Visit my website lugasm.beget.tech')
+
     def create_widgets(self):
         menubar = tkinter.Menu(self.window)
         self.window.config(menu=menubar)
@@ -176,8 +192,8 @@ class Minesweeper:
         menubar.add_cascade(label='File', menu=settings_menu_1)
 
         settings_menu_2 = tkinter.Menu(menubar, tearoff=0)
-        settings_menu_2.add_command(label='About')
-        settings_menu_2.add_command(label='Settings')
+        settings_menu_2.add_command(label='Version', command=self.about)
+        settings_menu_2.add_command(label='Author', command=self.author)
         menubar.add_cascade(label='Information', menu=settings_menu_2)
 
         count = 1
