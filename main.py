@@ -1,3 +1,4 @@
+import time
 import tkinter
 from random import shuffle
 from tkinter.messagebox import showinfo, showerror
@@ -73,11 +74,19 @@ class Minesweeper:
     def click(self, clicked_button: MyButton):
         if Minesweeper.is_game_over:
             return
+        if clicked_button['text'] == '🚩':
+            Minesweeper.mines += 1
+            self.flags_label.config(text=f"Flags: {Minesweeper.mines}")
+        elif clicked_button['state'] == 'disabled':
+            Minesweeper.mines -= 1
+            self.flags_label.config(text=f"Flags: {Minesweeper.mines}")
         if Minesweeper.is_first_click:
             self.insert_mines(clicked_button.number)
             self.count_mines_in_buttons()
             self.print_button()
             Minesweeper.is_first_click = False
+            self.start_time = time.time()
+        self.update_time_label()
         color = colors.get(clicked_button.count_bomb, "black")
         if clicked_button.is_mine:
             clicked_button.config(text="*", background='red', disabledforeground='black')
@@ -104,6 +113,11 @@ class Minesweeper:
 
         self.check_win()
 
+    def update_time_label(self):
+        if not Minesweeper.is_game_over:
+            elapsed_time = round(time.time() - self.start_time)
+            self.time_label.config(text=f"Time: {elapsed_time}")
+            Minesweeper.window.after(1000, self.update_time_label)
     def breadth_first_search(self, btn: MyButton):
         queue = [btn]
         while queue:
@@ -190,6 +204,14 @@ class Minesweeper:
         settings_menu_1.add_command(label='Settings', command=self.create_setting_window)
         settings_menu_1.add_command(label='Exit', command=self.window.destroy)
         menubar.add_cascade(label='File', menu=settings_menu_1)
+
+        self.flags_label = tkinter.Label(Minesweeper.window, text=f"Flags: {Minesweeper.mines}")
+        self.flags_label.grid(row=Minesweeper.row + 1, column=0, columnspan=Minesweeper.column // 2)
+
+
+        self.time_label = tkinter.Label(Minesweeper.window, text="Time: 0")
+        self.time_label.grid(row=Minesweeper.row + 1, column=Minesweeper.column // 2,
+                             columnspan=Minesweeper.column // 2)
 
         settings_menu_2 = tkinter.Menu(menubar, tearoff=0)
         settings_menu_2.add_command(label='Version', command=self.about)
