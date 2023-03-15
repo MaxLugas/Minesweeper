@@ -25,9 +25,6 @@ class MyButton(tkinter.Button):
         self.count_bomb = 0
         self.is_open = False
 
-    def __repr__(self):
-        return f'MyButton {self.x}{self.y}{self.number}{self.is_mine}'
-
 
 class Minesweeper:
     window = tkinter.Tk()
@@ -145,7 +142,6 @@ class Minesweeper:
 
     def start(self):
         self.create_widgets()
-        # self.open_all_buttons()
         Minesweeper.window.mainloop()
 
     def reload(self):
@@ -245,15 +241,9 @@ class Minesweeper:
         for i in range(1, Minesweeper.row + 1):
             for j in range(1, Minesweeper.column + 1):
                 btn = self.buttons[i][j]
-                if btn.is_mine:
-                    print('B', end='')
-                else:
-                    print(btn.count_bomb, end='')
-            print()
 
     def insert_mines(self, number: int):
         index_mines = self.get_mines_places(number)
-        print(index_mines)
         for i in range(1, Minesweeper.row + 1):
             for j in range(1, Minesweeper.column + 1):
                 btn = self.buttons[i][j]
